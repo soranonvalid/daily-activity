@@ -2,9 +2,7 @@ name: Daily Activity
 
 on:
   schedule:
-    # Runs every day at 09:00 UTC (16:00 WIB)
     - cron: '0 9 * * *'
-  # Allows you to trigger it manually from the Actions tab to test
   workflow_dispatch:
 
 permissions:
@@ -16,13 +14,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Make random changes and push
         run: |
           git config user.name "soranonvalid"
           git config user.email "soraunordinary@gmail.com"
           
-          # Generate a random number of commits (1 to 3) per day for natural variance
+          git pull --rebase origin HEAD || true
+          
           COMMITS=$((1 + RANDOM % 3))
           
           for i in $(seq 1 $COMMITS); do
@@ -31,5 +32,4 @@ jobs:
             git commit -m "chore: update log ($i/$COMMITS)"
           done
           
-          git pull --rebase
-          git push
+          git push origin HEAD
