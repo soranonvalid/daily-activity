@@ -31,4 +31,5 @@ jobs:
             git commit -m "chore: update log ($i/$COMMITS)"
           done
           
+          git pull --rebase
           git push
