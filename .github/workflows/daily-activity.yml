@@ -15,21 +15,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
       - name: Make random changes and push
         run: |
           git config user.name "soranonvalid"
           git config user.email "soraunordinary@gmail.com"
-          
-          git pull --rebase origin HEAD || true
-          
+
+          git fetch origin "${{ github.ref_name }}"
+          git reset --hard "origin/${{ github.ref_name }}"
+
           COMMITS=$((1 + RANDOM % 3))
-          
+
           for i in $(seq 1 $COMMITS); do
             echo "$(date -u) - Entry $RANDOM" >> log.txt
             git add log.txt
             git commit -m "chore: update log ($i/$COMMITS)"
           done
-          
-          git push origin HEAD
+
+          git push origin "HEAD:${{ github.ref_name }}"
