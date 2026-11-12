@@ -1,0 +1,34 @@
+name: Daily Activity
+
+on:
+  schedule:
+    # Runs every day at 09:00 UTC (16:00 WIB)
+    - cron: '0 9 * * *'
+  # Allows you to trigger it manually from the Actions tab to test
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Make random changes and push
+        run: |
+          git config user.name "soranonvalid"
+          git config user.email "nidsora25@gmail.com"
+          
+          # Generate a random number of commits (1 to 3) per day for natural variance
+          COMMITS=$((1 + RANDOM % 3))
+          
+          for i in $(seq 1 $COMMITS); do
+            echo "$(date -u) - Entry $RANDOM" >> log.txt
+            git add log.txt
+            git commit -m "chore: update log ($i/$COMMITS)"
+          done
+          
+          git push
